@@ -1,0 +1,20 @@
+### Test Pokemon API with explicit config
+GET http://localhost:3000/api/characters/pokemon/v1?metadata={"name":"pikachu"}&config={"baseUrl":"https://pokeapi.co/api/v2"}
+
+### Test Pokemon API using environment variables (.env)
+GET http://localhost:3000/api/characters/pokemon/v1?metadata={"name":"pikachu"}
+
+### Test Digimon API with explicit config
+GET http://localhost:3000/api/characters/digimon/v1?metadata={"id":1}&config={"baseUrl":"https://digi-api.com/api/v1"}
+
+### Test Digimon API using environment variables (.env)
+GET http://localhost:3000/api/characters/digimon/v1?metadata={"id":1}
+
+### Test Pokemon with different character (using .env)
+GET http://localhost:3000/api/characters/pokemon/v1?metadata={"name":"charizard"}
+
+### Test Digimon with different character (using .env)
+GET http://localhost:3000/api/characters/digimon/v1?metadata={"id":2}
+
+### Test Pokemon with custom API (overrides .env)
+GET http://localhost:3000/api/characters/pokemon/v1?metadata={"name":"pikachu"}&config={"baseUrl":"https://custom-pokeapi.com/api/v2"} 
