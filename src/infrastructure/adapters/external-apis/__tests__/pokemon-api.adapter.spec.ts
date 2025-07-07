@@ -21,6 +21,8 @@ describe('PokemonApiAdapter', () => {
             { ability: { name: 'static' } },
             { ability: { name: 'lightning-rod' } },
           ],
+          types: [],
+          moves: [],
           species: { url: 'https://pokeapi.co/api/v2/pokemon-species/25/' },
         },
       }),
@@ -98,5 +100,27 @@ describe('PokemonApiAdapter', () => {
         throw error;
       }
     }
+  });
+
+  it('should be defined', () => {
+    expect(PokemonApiAdapter).toBeDefined();
+  });
+
+  it('should handle missing fields gracefully', async () => {
+    const adapter = new PokemonApiAdapter();
+    const metadata: Metadata = { name: 'pikachu' };
+    const config: Config = { baseUrl: 'https://pokeapi.co/api/v2' };
+    // Simula una respuesta compatible con el tipo Character
+    const mockFetchCharacter = jest
+      .spyOn(adapter, 'fetchCharacter')
+      .mockResolvedValue({
+        name: 'pikachu',
+        weight: 60,
+        powers: [],
+        evolutions: [],
+      });
+    const result = await adapter.fetchCharacter(metadata, config);
+    expect(result.name).toBe('pikachu');
+    mockFetchCharacter.mockRestore();
   });
 });

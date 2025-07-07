@@ -26,18 +26,18 @@ interface DigimonApiResponse {
 
 export default class DigimonApiAdapter {
   async fetchCharacter(metadata: Metadata, config: Config): Promise<Character> {
-    if (typeof metadata.id !== 'number') {
-      throw new Error('Digimon id is required in metadata');
+    if (!metadata.name) {
+      throw new Error('Digimon name is required in metadata');
     }
     if (!config.baseUrl) {
       throw new Error('baseUrl is required in config');
     }
 
     try {
-      console.log(`Fetching Digimon data for ID: ${metadata.id}`);
+      console.log(`Fetching Digimon data for ID: ${metadata.name}`);
 
       // Ajusta la URL según la API real de Digimon
-      const url = `${config.baseUrl}/digimon/${metadata.id}`;
+      const url = `${config.baseUrl}/digimon/${metadata.name}`;
       const response = await axios.get<DigimonApiResponse>(url);
       const data = response.data;
 
@@ -103,7 +103,7 @@ export default class DigimonApiAdapter {
 
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
-          throw new Error(`Digimon with ID ${metadata.id} not found`);
+          throw new Error(`Digimon with ID ${metadata.name} not found`);
         } else if (error.response) {
           // Error de la API (404, 500, etc)
           throw new Error(
