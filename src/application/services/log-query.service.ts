@@ -17,4 +17,23 @@ export class LogQueryService {
     const entities = await this.db.getRequestLogsByFranchise(franchise);
     return entities.map((e: RequestLogEntity) => e.toDomain());
   }
+
+  async getLogsPaginatedAndFiltered(
+    page: number,
+    limit: number,
+    filters: {
+      franchise?: Franchise;
+      status?: string;
+      version?: string;
+      fechaDesde?: Date;
+      fechaHasta?: Date;
+    },
+  ): Promise<{ data: RequestLog[]; total: number }> {
+    const [entities, total] = await this.db.getLogsPaginatedAndFiltered(
+      page,
+      limit,
+      filters,
+    );
+    return { data: entities.map((e) => e.toDomain()), total };
+  }
 }

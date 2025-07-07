@@ -4,6 +4,7 @@ import {
   Param,
   HttpException,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -52,5 +53,31 @@ export class LogController {
       franchise as Franchise,
     );
     return logs.map((log) => ({ ...log }));
+  }
+
+  @Get('paginated')
+  async getPaginatedLogs(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
+    @Query('franchise') franchise?: Franchise,
+    @Query('status') status?: string,
+    @Query('version') version?: string,
+    @Query('fechaDesde') fechaDesde?: string,
+    @Query('fechaHasta') fechaHasta?: string,
+  ): Promise<{ data: RequestLogResponseDto[]; total: number }> {
+    const filters = {
+      franchise,
+      status,
+      version,
+      fechaDesde: fechaDesde ? new Date(fechaDesde) : undefined,
+      fechaHasta: fechaHasta ? new Date(fechaHasta) : undefined,
+    };
+    const { data, total } =
+      await this.logQueryService.getLogsPaginatedAndFiltered(
+        Number(page),
+        Number(limit),
+        filters,
+      );
+    return { data, total };
   }
 }
