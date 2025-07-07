@@ -1,21 +1,29 @@
-import { Injectable } from '@nestjs/common';
-import { RequestLog } from '../../domain/entities/request-log.entity';
+import { Injectable, Inject } from '@nestjs/common';
+import { RequestLogEntity } from 'src/infrastructure/adapters/database/request-log.entity';
+import { RequestLogRepository } from 'src/domain/repositories/request-log-repository.interface';
 import { Franchise } from '../../shared/enums';
-import { TypeOrmDatabaseAdapter } from 'src/infrastructure/adapters/database/typeorm-database.adapter';
 
 @Injectable()
 export class RequestLogService {
-  constructor(private readonly databaseAdapter: TypeOrmDatabaseAdapter) {}
+  constructor(
+    @Inject('RequestLogRepository')
+    private readonly repo: RequestLogRepository,
+  ) {}
 
-  async saveRequestLog(requestLog: RequestLog): Promise<void> {
-    await this.databaseAdapter.saveRequestLog(requestLog);
+  async saveRequestLog(
+    log: Partial<RequestLogEntity>,
+  ): Promise<RequestLogEntity> {
+    return this.repo.save(log);
   }
 
-  async getAllRequestLogs(): Promise<RequestLog[]> {
-    return await this.databaseAdapter.getAllRequestLogs();
+  async getAllLogs(): Promise<RequestLogEntity[]> {
+    return this.repo.findAll();
   }
 
-  async getRequestLogsByFranchise(franchise: Franchise): Promise<RequestLog[]> {
-    return await this.databaseAdapter.getRequestLogsByFranchise(franchise);
+  async getRequestLogsByFranchise(
+    franchise: Franchise,
+  ): Promise<RequestLogEntity[]> {
+    const all = await this.repo.findAll();
+    return all.filter((log) => log.franchise === franchise);
   }
 }

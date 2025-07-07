@@ -18,25 +18,18 @@ export class TypeOrmDatabaseAdapter {
     await this.requestLogRepo.save(entity);
   }
 
-  async getAllRequestLogs(): Promise<RequestLog[]> {
-    const entities = await this.requestLogRepo.find();
-    return entities.map((e) => this.toDomain(e));
+  async getAllRequestLogs(): Promise<RequestLogEntity[]> {
+    return this.requestLogRepo.find();
   }
 
-  async getRequestLogsByFranchise(franchise: Franchise): Promise<RequestLog[]> {
-    const entities = await this.requestLogRepo.find({ where: { franchise } });
-    return entities.map((e) => this.toDomain(e));
+  async getRequestLogsByFranchise(
+    franchise: Franchise,
+  ): Promise<RequestLogEntity[]> {
+    return this.requestLogRepo.find({ where: { franchise } });
   }
 
-  private toEntity(log: RequestLog): Omit<RequestLogEntity, 'id'> {
-    return {
-      franchise: log.franchise,
-      version: log.version,
-      metadata: JSON.stringify(log.metadata),
-      timestamp: log.timestamp,
-      status: log.status,
-      errorMessage: log.errorMessage,
-    };
+  private toEntity(log: RequestLog): RequestLogEntity {
+    return RequestLogEntity.from(log);
   }
 
   private toDomain(entity: RequestLogEntity): RequestLog {

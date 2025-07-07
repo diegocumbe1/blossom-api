@@ -5,7 +5,6 @@ import { Config } from '../../domain/value-objects/config.vo';
 import { Franchise, RequestStatus } from '../../shared/enums';
 import { ExternalApiAdapter } from '../../infrastructure/adapters/external-apis/external-api.adapter';
 import { RequestLogService } from './request-log.service';
-import { createRequestLog } from '../../domain/entities/request-log.entity';
 
 @Injectable()
 export class CharacterService {
@@ -28,30 +27,27 @@ export class CharacterService {
         config,
       );
 
-      // Log del request exitoso
-      const successLog = createRequestLog(
+      // Guardar log exitoso en la base de datos
+      await this.requestLogService.saveRequestLog({
         franchise,
         version,
-        metadata,
-        RequestStatus.SUCCESS,
-      );
-      await this.requestLogService.saveRequestLog(successLog);
+        metadata: JSON.stringify(metadata),
+        timestamp: new Date(),
+        status: RequestStatus.SUCCESS,
+        errorMessage: undefined,
+      });
 
       return character;
     } catch (error) {
-      // Log del request fallido
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
-      const failLog = createRequestLog(
+      // Guardar log fallido en la base de datos
+      await this.requestLogService.saveRequestLog({
         franchise,
         version,
-        metadata,
-        RequestStatus.FAIL,
-        errorMessage,
-      );
-      await this.requestLogService.saveRequestLog(failLog);
-
-      // Re-lanzar el error para que sea manejado por el adaptador HTTP
+        metadata: JSON.stringify(metadata),
+        timestamp: new Date(),
+        status: RequestStatus.FAIL,
+        errorMessage: error instanceof Error ? error.message : String(error),
+      });
       throw error;
     }
   }

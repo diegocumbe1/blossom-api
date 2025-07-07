@@ -1,7 +1,6 @@
-import { RequestLog } from '../entities/request-log.entity';
+import { RequestLogEntity } from 'src/infrastructure/adapters/database/request-log.entity';
 
 export interface RequestLogRepository {
-  save(requestLog: RequestLog): Promise<void>;
-  findAll(): Promise<RequestLog[]>;
-  findByFranchise(franchise: string): Promise<RequestLog[]>;
+  save(log: Partial<RequestLogEntity>): Promise<RequestLogEntity>;
+  findAll(): Promise<RequestLogEntity[]>;
 }

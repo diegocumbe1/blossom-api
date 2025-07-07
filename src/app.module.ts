@@ -16,6 +16,7 @@ import { RequestLogEntity } from './infrastructure/adapters/database/request-log
 import { TypeOrmDatabaseAdapter } from './infrastructure/adapters/database/typeorm-database.adapter';
 import { ConfigModule } from '@nestjs/config';
 import { ConfigValidator } from './infrastructure/config/config-validator';
+import { TypeOrmRequestLogRepository } from './infrastructure/adapters/database/typeorm-request-log.repository';
 
 @Module({
   imports: [
@@ -39,6 +40,10 @@ import { ConfigValidator } from './infrastructure/config/config-validator';
     DigimonApiAdapter,
     TypeOrmDatabaseAdapter,
     ConfigValidator,
+    {
+      provide: 'RequestLogRepository',
+      useClass: TypeOrmRequestLogRepository,
+    },
     {
       provide: APP_PIPE,
       useClass: ValidationPipe,
